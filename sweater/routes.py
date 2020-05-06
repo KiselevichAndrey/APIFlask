@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from sweater import app, db
-from sweater.models import Message, User
+from sweater.models import User
 
 
 @app.route('/', methods=['GET'])
@@ -14,39 +14,47 @@ def hello_world():
 @app.route('/main', methods=['GET'])
 @login_required
 def main():
-    return render_template('main.html', messages=Message.query.all())
-
-
-@app.route('/add_message', methods=['POST'])
-@login_required
-def add_message():
-    text = request.form['text']
-    tag = request.form['tag']
-
-    db.session.add(Message(text, tag))
-    db.session.commit()
-
-    return redirect(url_for('main'))
+    return render_template('main.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
     login = request.form.get('login')
+    email = request.form.get('email')
     password = request.form.get('password')
 
-    if login and password:
-        user = User.query.filter_by(login=login).first()
-
-        if user and check_password_hash(user.password, password):
-            login_user(user)
-
-            next_page = request.args.get('next')
-
-            return redirect(next_page)
-        else:
-            flash('Login or password is not correct')
+    if login and email:
+        flash('Please, enter either login or email')
     else:
-        flash('Please fill login and password fields')
+        if login and password:
+            user = User.query.filter_by(login=login).first()
+
+            if user and check_password_hash(user.password, password):
+                login_user(user)
+
+                # next_page = request.args.get('next')
+
+                # return redirect(next_page)
+                return redirect('main')
+            else:
+                flash('Login or password is not correct')
+        else:
+            flash('Please fill login and password fields')
+
+        if email and password:
+            user = User.query.filter_by(email=email).first()
+
+            if user and check_password_hash(user.password, password):
+                login_user(user)
+
+                # next_page = request.args.get('next')
+
+                # return redirect(next_page)
+                return redirect('main')
+            else:
+                flash('Email or password is not correct')
+        else:
+            flash('Please fill email and password fields')
 
     return render_template('login.html')
 
@@ -54,21 +62,36 @@ def login_page():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     login = request.form.get('login')
+    email = request.form.get('email')
     password = request.form.get('password')
     password2 = request.form.get('password2')
 
-    if request.method == 'POST':
-        if not (login or password or password2):
-            flash('Please, fill all fields!')
-        elif password != password2:
-            flash('Passwords are not equal!')
-        else:
-            hash_pwd = generate_password_hash(password)
-            new_user = User(login=login, password=hash_pwd)
-            db.session.add(new_user)
-            db.session.commit()
+    if login:
+        if request.method == 'POST':
+            if not (login or password or password2):
+                flash('Please, fill all fields!')
+            elif password != password2:
+                flash('Passwords are not equal!')
+            else:
+                hash_pwd = generate_password_hash(password)
+                new_user = User(login=login, password=hash_pwd)
+                db.session.add(new_user)
+                db.session.commit()
 
-            return redirect(url_for('login_page'))
+                return redirect(url_for('login_page'))
+    elif email:
+        if request.method == 'POST':
+            if not (email or password or password2):
+                flash('Please, fill all fields!')
+            elif password != password2:
+                flash('Passwords are not equal!')
+            else:
+                hash_pwd = generate_password_hash(password)
+                new_user = User(email=email, password=hash_pwd)
+                db.session.add(new_user)
+                db.session.commit()
+
+                return redirect(url_for('login_page'))
 
     return render_template('register.html')
 
@@ -80,9 +103,9 @@ def logout():
     return redirect(url_for('hello_world'))
 
 
-@app.after_request
-def redirect_to_signin(response):
-    if response.status_code == 401:
-        return redirect(url_for('login_page') + '?next=' + request.url)
-
-    return response
+# @app.after_request
+# def redirect_to_signin(response):
+#     if response.status_code == 401:
+#         return redirect(url_for('login_page') + '?next=' + request.url)
+#
+#     return response

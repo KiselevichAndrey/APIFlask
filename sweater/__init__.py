@@ -12,5 +12,5 @@ manager = LoginManager(app)
 
 from sweater import models, routes
 
-app.run()
 db.create_all()
+app.run()
