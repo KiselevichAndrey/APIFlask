@@ -66,6 +66,11 @@ def register():
     password = request.form.get('password')
     password2 = request.form.get('password2')
 
+    if password:
+            if len(password) < 8:
+                flash('Password characters too few!')
+                return redirect(url_for('register'))
+
     if login:
         if request.method == 'POST':
             if not (login or password or password2):
@@ -79,6 +84,7 @@ def register():
                 db.session.commit()
 
                 return redirect(url_for('login_page'))
+
     elif email:
         if request.method == 'POST':
             if not (email or password or password2):
