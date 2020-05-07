@@ -23,9 +23,12 @@ def login_page():
     email = request.form.get('email')
     password = request.form.get('password')
 
-    if login and email:
-        flash('Please, enter either login or email')
-    else:
+    if (email and login and password) is not None:  # Проверяем на None (первичный вход на страницу)
+
+        if login and email:
+            flash('Please, enter either login or email')
+            return render_template('login.html')
+
         if login and password:
             user = User.query.filter_by(login=login).first()
 
@@ -38,8 +41,10 @@ def login_page():
                 return redirect('main')
             else:
                 flash('Login or password is not correct')
-        else:
-            flash('Please fill login and password fields')
+                return render_template('login.html')
+        # else:
+        #     flash('Please fill login and password fields')
+        #     return render_template('login.html')
 
         if email and password:
             user = User.query.filter_by(email=email).first()
@@ -53,8 +58,13 @@ def login_page():
                 return redirect('main')
             else:
                 flash('Email or password is not correct')
-        else:
-            flash('Please fill email and password fields')
+                return render_template('login.html')
+        # else:
+        #     flash('Please fill email and password fields')
+        #     return redirect('login')
+    else:
+        flash('Please, fill login(email) and password fields')
+        return render_template('login.html')
 
     return render_template('login.html')
 
