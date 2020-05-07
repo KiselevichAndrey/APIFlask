@@ -118,7 +118,7 @@ def register():
     return render_template('register.html')
 
 
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/logout', methods=['GET', 'POST'])  # Логаут юзера
 @login_required
 def logout():
     logout_user()
