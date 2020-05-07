@@ -25,7 +25,7 @@ def login_page():
 
     if (email and login and password) is not None:  # Проверяем на None (первичный вход на страницу)
 
-        if login and email:
+        if login and email:  # Если пользователь ввел и логин и емейл
             flash('Please, enter either login or email')
             return render_template('login.html')
 
@@ -42,9 +42,6 @@ def login_page():
             else:
                 flash('Login or password is not correct')
                 return render_template('login.html')
-        # else:
-        #     flash('Please fill login and password fields')
-        #     return render_template('login.html')
 
         if email and password:
             user = User.query.filter_by(email=email).first()
@@ -59,10 +56,7 @@ def login_page():
             else:
                 flash('Email or password is not correct')
                 return render_template('login.html')
-        # else:
-        #     flash('Please fill email and password fields')
-        #     return redirect('login')
-    else:
+    else: # Ситуация при первичном входе не страницу login
         flash('Please, fill login(email) and password fields')
         return render_template('login.html')
 
@@ -75,6 +69,10 @@ def register():
     email = request.form.get('email')
     password = request.form.get('password')
     password2 = request.form.get('password2')
+
+    if login and email:
+        flash('Please, enter either login or email')
+        return render_template('register.html')
 
     if password:
             if len(password) < 8:
