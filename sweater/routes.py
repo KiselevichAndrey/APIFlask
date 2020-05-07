@@ -88,8 +88,12 @@ def register():
             else:
                 hash_pwd = generate_password_hash(password)
                 new_user = User(login=login, password=hash_pwd)
-                db.session.add(new_user)
-                db.session.commit()
+                if User.query.filter_by(login=login).first() != new_user:  # Пров-ем в БД создан-ли юзер под этим логом
+                    flash('A user with this login is already registered!')
+                    return redirect(url_for('register'))
+                else:
+                    db.session.add(new_user)
+                    db.session.commit()
 
                 return redirect(url_for('login_page'))
 
@@ -102,8 +106,12 @@ def register():
             else:
                 hash_pwd = generate_password_hash(password)
                 new_user = User(email=email, password=hash_pwd)
-                db.session.add(new_user)
-                db.session.commit()
+                if User.query.filter_by(email=email).first() != new_user:  # Пров-ем в БД создан-ли юзер под этим мылом
+                    flash('A user with this email is already registered!')
+                    return redirect(url_for('register'))
+                else:
+                    db.session.add(new_user)
+                    db.session.commit()
 
                 return redirect(url_for('login_page'))
 
