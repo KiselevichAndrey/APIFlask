@@ -34,11 +34,14 @@ def login_page():
 
             if user and check_password_hash(user.password, password):
                 login_user(user)
+                user = {'username': login}
+                password = {'password': password}
 
                 # next_page = request.args.get('next')
 
                 # return redirect(next_page)
-                return redirect('main')
+                # return redirect('main')
+                return render_template('main.html', title='Home', user=user, password=password)
             else:
                 flash('Login or password is not correct')
                 return render_template('login.html')
@@ -48,11 +51,14 @@ def login_page():
 
             if user and check_password_hash(user.password, password):
                 login_user(user)
+                user = {'username': email}
+                password = {'password': password}
 
                 # next_page = request.args.get('next')
 
                 # return redirect(next_page)
-                return redirect('main')
+                # return redirect('main')
+                return render_template('main.html', title='Home', user=user, password=password)
             else:
                 flash('Email or password is not correct')
                 return render_template('login.html')
@@ -88,7 +94,8 @@ def register():
             else:
                 hash_pwd = generate_password_hash(password)
                 new_user = User(login=login, password=hash_pwd)
-                if User.query.filter_by(login=login).first() != new_user:  # Пров-ем в БД создан-ли юзер под этим логом
+
+                if User.query.filter_by(login=login).first() is not None:  # Пров-ем в БД создан-ли юзер под этим логом
                     flash('A user with this login is already registered!')
                     return redirect(url_for('register'))
                 else:
@@ -106,7 +113,8 @@ def register():
             else:
                 hash_pwd = generate_password_hash(password)
                 new_user = User(email=email, password=hash_pwd)
-                if User.query.filter_by(email=email).first() != new_user:  # Пров-ем в БД создан-ли юзер под этим мылом
+
+                if User.query.filter_by(email=email).first() is not None:  # Пров-ем в БД создан-ли юзер под этим мылом
                     flash('A user with this email is already registered!')
                     return redirect(url_for('register'))
                 else:
