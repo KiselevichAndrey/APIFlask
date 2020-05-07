@@ -34,14 +34,11 @@ def login_page():
 
             if user and check_password_hash(user.password, password):
                 login_user(user)
-                user = {'username': login}
-                password = {'password': password}
-
                 # next_page = request.args.get('next')
 
                 # return redirect(next_page)
                 # return redirect('main')
-                return render_template('main.html', title='Home', user=user, password=password)
+                return render_template('main.html', user=login, password=password)
             else:
                 flash('Login or password is not correct')
                 return render_template('login.html')
@@ -51,14 +48,11 @@ def login_page():
 
             if user and check_password_hash(user.password, password):
                 login_user(user)
-                user = {'username': email}
-                password = {'password': password}
-
                 # next_page = request.args.get('next')
 
                 # return redirect(next_page)
                 # return redirect('main')
-                return render_template('main.html', title='Home', user=user, password=password)
+                return render_template('main.html', user=email, password=password)
             else:
                 flash('Email or password is not correct')
                 return render_template('login.html')
