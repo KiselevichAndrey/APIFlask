@@ -56,7 +56,7 @@ def login_page():
             else:
                 flash('Email or password is not correct')
                 return render_template('login.html')
-    else: # Ситуация при первичном входе не страницу login
+    else:  # Ситуация при первичном входе не страницу login
         flash('Please, fill login(email) and password fields')
         return render_template('login.html')
 
