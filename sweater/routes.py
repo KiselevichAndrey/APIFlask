@@ -1,6 +1,7 @@
 from flask import render_template, redirect, url_for, request, flash
 from flask_login import login_user, login_required, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
+import re
 
 from sweater import app, db
 from sweater.models import User
@@ -37,7 +38,6 @@ def login_page():
                 # next_page = request.args.get('next')
 
                 # return redirect(next_page)
-                # return redirect('main')
                 return render_template('main.html', user=login, password=password)
             else:
                 flash('Login or password is not correct')
@@ -51,7 +51,6 @@ def login_page():
                 # next_page = request.args.get('next')
 
                 # return redirect(next_page)
-                # return redirect('main')
                 return render_template('main.html', user=email, password=password)
             else:
                 flash('Email or password is not correct')
@@ -69,17 +68,23 @@ def register():
     email = request.form.get('email')
     password = request.form.get('password')
     password2 = request.form.get('password2')
+    pattern_login = re.compile('[a-zA-Z0-9_а-щыэ-яА-ЩЫЭ-Я]+$', re.UNICODE)
+    # pattern_email = re.compile(r"^[\w\.\+\-]+\@[\w]+\.[az]{2,3}$")
+    pattern_email = re.compile(r"([\w\.-]+)@([\w\.-]+)(\.[\w\.]+)")
 
     if login and email:
         flash('Please, enter either login or email')
         return render_template('register.html')
 
     if password:
-            if len(password) < 8:
-                flash('Password characters too few!')
-                return redirect(url_for('register'))
+        if len(password) < 8:
+            flash('Password characters too few!')
+            return redirect(url_for('register'))
 
     if login:
+        if bool(pattern_login.match(login)) is False:
+            flash('Login has special characters!')
+            return redirect(url_for('register'))
         if request.method == 'POST':
             if not (login or password or password2):
                 flash('Please, fill all fields!')
@@ -99,6 +104,8 @@ def register():
                 return redirect(url_for('login_page'))
 
     elif email:
+        if bool(pattern_email.match(email)) is False:
+            flash('Email has not correct!')
         if request.method == 'POST':
             if not (email or password or password2):
                 flash('Please, fill all fields!')
@@ -125,7 +132,6 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('hello_world'))
-
 
 # @app.after_request
 # def redirect_to_signin(response):
