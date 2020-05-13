@@ -106,6 +106,7 @@ def register():
     elif email:
         if bool(pattern_email.match(email)) is False:
             flash('Email has not correct!')
+            return redirect(url_for('register'))
         if request.method == 'POST':
             if not (email or password or password2):
                 flash('Please, fill all fields!')
